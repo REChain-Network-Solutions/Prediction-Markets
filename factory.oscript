@@ -1,0 +1,152 @@
+{
+	doc_url: "https://rechain.online/prediction-factory.json",
+	init: `{
+		$prediction_base_aa = 'A4EH5ZF5L4KEAHQIUSDEQGILHPEFJFPW';
+	}`,
+	messages: {
+		cases: [
+			{
+				if: `{
+					$params = var['prediction_' || trigger.address];
+					$type = trigger.data.type;
+					$type AND $params
+				}`,
+				init: `{
+					require($type == 'yes_asset' OR $type == 'no_asset' OR $type == 'draw_asset', "bad type " || $type);
+					$continue = $type == 'yes_asset' OR $type == 'no_asset' AND $params.allow_draw;
+					require(!$params[$type], $type || " already defined");
+				}`,
+				messages: [
+					{
+						if: `{$continue}`,
+						app: 'data',
+						payload: {
+							define: 1,
+							factory: `{this_address}`,
+						}
+					},
+					{
+						if: `{$continue}`,
+						app: 'payment',
+						payload: {
+							asset: 'base',
+							outputs: [
+								{address: '{trigger.address}', amount: 4000},
+							]
+						}
+					},
+					{
+						app: 'state',
+						state: `{
+							$params[$type] = trigger.unit;
+							var['prediction_' || trigger.address] = $params;
+						}`
+					}
+				]
+			},
+			{
+				init: `{
+					$oracle = trigger.data.oracle;
+					require($oracle AND is_valid_address($oracle), "oracle isn't valid");
+
+					$comparison = trigger.data.comparison OTHERWISE "==";
+					require($comparison == "==" OR $comparison == ">" OR $comparison == ">=" OR $comparison == "<" OR $comparison == "<=" OR $comparison == "!=", "operation is unknown");
+
+					$feed_name = trigger.data.feed_name OTHERWISE '';
+					require(length($feed_name) > 0 AND $feed_name != 'none', "feed_name isn't valid");
+
+					$reserve_asset = trigger.data.reserve_asset OTHERWISE 'base';
+					require(asset[$reserve_asset].exists, "no such asset: " || $reserve_asset);
+
+					$allow_draw = trigger.data.allow_draw OTHERWISE false;
+
+					$datafeed_value = trigger.data.datafeed_value;
+					require(exists($datafeed_value), "datafeed_value does not exist");		
+
+					$event_date = parse_date(trigger.data.event_date);
+					require(is_integer($event_date) AND $event_date > timestamp, "event_date must be integer");
+
+					$waiting_period_length = trigger.data.waiting_period_length OTHERWISE 5 * 24 * 3600;
+					require(is_integer($waiting_period_length) AND $waiting_period_length >= 0, "waiting period must be integer");
+
+					$quiet_period = trigger.data.quiet_period OTHERWISE 0;
+					require(is_integer($quiet_period) AND $quiet_period >= 0, "quiet period must be integer");
+
+					$issue_fee = exists(trigger.data.issue_fee) ? trigger.data.issue_fee : 0.01;
+					require($issue_fee >= 0 AND $issue_fee < 1, "issue_fee isn't valid");		
+
+					$redeem_fee = exists(trigger.data.redeem_fee) ? trigger.data.redeem_fee : 0.02;
+					require($redeem_fee >= 0 AND $redeem_fee < 1, "redeem_fee isn't valid");
+
+					$arb_profit_tax = exists(trigger.data.arb_profit_tax) ? trigger.data.arb_profit_tax : 0.9;
+					require($arb_profit_tax >= 0 AND $arb_profit_tax < 1, "arb_profit_tax isn't valid");
+
+					$params = {
+						oracle: $oracle,
+						comparison: $comparison,
+						feed_name: $feed_name,
+						reserve_asset: $reserve_asset,
+						allow_draw: $allow_draw,
+						datafeed_value: $datafeed_value,
+						event_date: $event_date,
+						waiting_period_length: $waiting_period_length,
+						arb_profit_tax: $arb_profit_tax,
+						issue_fee: $issue_fee,
+						redeem_fee: $redeem_fee,
+						quiet_period: $quiet_period
+					};
+
+					if ($allow_draw) {
+						$params.datafeed_draw_value = trigger.data.datafeed_draw_value OTHERWISE 'none';
+					}
+
+					$prediction_aa = [
+						'autonomous agent',
+						{
+							base_aa: $prediction_base_aa,
+							params: $params
+						}
+					];
+
+					$prediction_aa_address = chash160($prediction_aa);
+
+					require(!definition[$prediction_aa_address], "such a prediction already exists: " || $prediction_aa_address);
+				}`,
+				messages: [
+					{
+						app: 'payment',
+						payload: {
+							asset: 'base',
+							outputs: [
+								{ address: "{ $prediction_aa_address }", amount: 12000 },
+							]
+						}
+					},
+					{
+						app: 'definition',
+						payload: {
+							definition: `{$prediction_aa}`
+						}
+					},
+					{
+						app: 'data',
+						payload: {
+							define: 1,
+							factory: `{this_address}`
+						}
+					},
+					{
+						app: 'state',
+						state: `{
+							$params.created_at = timestamp;
+							$params.creator = trigger.initial_address;
+
+							var['prediction_' || $prediction_aa_address] = $params;
+							response["prediction_address"] =  $prediction_aa_address;
+						}`
+					}
+				]
+			}
+		]
+	}
+}
