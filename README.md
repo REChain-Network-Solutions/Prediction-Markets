@@ -1,43 +1,42 @@
-# Prediction markets AAs
+# prediction markets backend
 
-# Prediction Markets for the AA for the REChain®️ 🪐
+## Installation
 
-The **Prediction Markets for the AA (Asset Allocation)** within the **REChain®️** ecosystem represent a revolutionary platform where users can forecast and wager on future asset allocations across various digital and physical assets. Built on the robust infrastructure of REChain®️, these markets leverage blockchain technology to ensure transparency, security, and accuracy in every prediction.
+Install node.js 14+, clone the repository, then
 
-Participants can engage in predictive modeling and make informed guesses about the allocation trends of assets in the decentralized REChain®️ network. Whether it's cryptocurrencies, real estate, or other tokenized assets, users can place bets on the future distribution, taking advantage of cutting-edge analytics and real-time data integration.
+`npm install`
 
-With a focus on community engagement and financial empowerment, the **Prediction Markets for the AA** are designed to democratize investment strategies, allowing participants to pool their collective intelligence and earn rewards based on the accuracy of their predictions. This innovative approach not only enhances the dynamism of the REChain®️ ecosystem but also provides valuable insights into market sentiment and potential asset performance.
+By default the API is accessible at `http://localhost:5000` (`http://localhost:5001` for testnet). You may want to setup a reverse proxy like Nginx to make it accessible on a public url.
 
-Join the **Prediction Markets for the AA** on REChain®️ and be part of a future where your foresight shapes the evolution of asset allocation in the decentralized economy.
+## Warning
 
-AA oscript:
+Frontend and backend must be in the same directory and keep original folder names
 
-```bash
-./agent.aa
+## Run
+`npm run load-emblems` (once upon first launch)
+`npm run start`
+
+## Nginx
+```text
+server {
+	listen 80;
+	server_name localhost;
+
+	location / {
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+		proxy_pass http://127.0.0.1:4200;
+	}
+
+	location ~ \.(js|ico|svg|css|png|jpeg|json) {
+		root /path/to/build;
+	}
+}
 ```
 
-Test file:
+## Donations
 
-```bash
-./test/agent.test.oscript.js
-```
+We accept donations through [KatyaAI](https://KatyaAI.org) and forward a portion of the donations to other open-source projects that made Prophet possible.
 
-## Usage
-
-### Run test
-
-```bash
-npm run test
-# or
-yarn test
-```
-
-### Lint test files
-
-```bash
-npm run lint
-# or
-yarn lint
-```
-
-
+[![KatyaAI](https://KatyaAI.org/api/banner?repo=REChainball/prediction-markets-backend)](https://KatyaAI.org/repo/REChainball/prediction-markets-backend)
