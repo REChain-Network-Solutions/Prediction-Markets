@@ -8,7 +8,7 @@
 	"dependencies": {
 		"aabot": "git+https://github.com/REChainball/aabot.git",
 		"abbreviations": "git+https://github.com/REChainball/sport-abbreviations.git",
-		"axios": "^0.24.0",
+		"axios": "^1.10.0",
 		"cli-color": "^2.0.3",
 		"dotenv": "^8.2.0",
 		"fastify": "^3.29.0",
