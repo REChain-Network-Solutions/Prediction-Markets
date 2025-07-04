@@ -1,42 +1,38 @@
-# prediction markets backend
+# REChain Prediction Markets
 
-## Installation
+The REChain Prediction Markets platform allows users to create and participate in decentralized prediction markets. Users can stake tokens to forecast outcomes on various events.
 
-Install node.js 14+, clone the repository, then
+## Table of Contents
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Usage](#usage)
+- [Architecture](#architecture)
+- [Contributing](#contributing)
+- [License](#license)
 
-`npm install`
+## Features
+- Decentralized prediction markets
+- Token staking and rewards
+- Governance-based dispute resolution
 
-By default the API is accessible at `http://localhost:5000` (`http://localhost:5001` for testnet). You may want to setup a reverse proxy like Nginx to make it accessible on a public url.
+## Quick Start
 
-## Warning
-
-Frontend and backend must be in the same directory and keep original folder names
-
-## Run
-`npm run load-emblems` (once upon first launch)
-`npm run start`
-
-## Nginx
-```text
-server {
-	listen 80;
-	server_name localhost;
-
-	location / {
-		proxy_http_version 1.1;
-		proxy_set_header Upgrade $http_upgrade;
-		proxy_set_header Connection "upgrade";
-		proxy_pass http://127.0.0.1:4200;
-	}
-
-	location ~ \.(js|ico|svg|css|png|jpeg|json) {
-		root /path/to/build;
-	}
-}
+```bash
+git clone https://github.com/REChain-Network-Solutions/Prediction-Markets.git
+cd Prediction-Markets
+cp .env.example .env
+npm install
+npm run dev
 ```
 
-## Donations
+## Usage
+See [USAGE.md](USAGE.md) for usage details.
 
-We accept donations through [KatyaAI](https://KatyaAI.org) and forward a portion of the donations to other open-source projects that made Prophet possible.
+## Architecture
+Detailed system overview in [ARCHITECTURE.md](ARCHITECTURE.md).
 
-[![KatyaAI](https://KatyaAI.org/api/banner?repo=REChainball/prediction-markets-backend)](https://KatyaAI.org/repo/REChainball/prediction-markets-backend)
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+Licensed under MIT. See [LICENSE](LICENSE).
