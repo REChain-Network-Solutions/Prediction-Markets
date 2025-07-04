@@ -16,7 +16,7 @@
 		"fastify-sensible": "^3.2.0",
 		"lodash": "^4.17.21",
 		"moment": "^2.29.3",
-		"node-cron": "^3.0.0",
+		"node-cron": "^4.2.0",
 		"request": "^2.88.2",
 		"sharp": "^0.30.7",
 		"sitemap": "^7.1.1"
