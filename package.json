@@ -19,7 +19,7 @@
 		"node-cron": "^4.2.0",
 		"request": "^2.88.2",
 		"sharp": "^0.34.2",
-		"sitemap": "^7.1.1"
+		"sitemap": "^8.0.0"
 	},
 	"resolutions": {}
 }
